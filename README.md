@@ -91,6 +91,96 @@ Open **http://localhost:5173** in your browser to use the kiosk.
 
 ---
 
+## Windows installation and use
+
+The commands above are written for macOS/Linux. Windows users need a few adjustments depending on whether they use **Command Prompt (cmd)** or **PowerShell**.
+
+### Prerequisites check (Windows)
+
+On Windows, Python is usually invoked as `python` (not `python3`):
+
+```cmd
+python --version
+node --version
+npm --version
+```
+
+If `python` is not recognised, download the installer from [python.org](https://www.python.org/downloads/) and check **"Add Python to PATH"** during installation.
+
+---
+
+### Terminal 1 — Backend (Windows)
+
+**Command Prompt:**
+
+```cmd
+cd backend
+
+:: Create and activate virtual environment (first time only)
+python -m venv .venv
+.venv\Scripts\activate
+
+:: Install dependencies (first time only)
+pip install -r requirements.txt
+
+:: Set your API key
+set ANTHROPIC_API_KEY=sk-ant-...
+
+:: Start the server
+uvicorn main:app --reload --reload-exclude ".venv" --port 8000
+```
+
+**PowerShell:**
+
+```powershell
+cd backend
+
+# Create and activate virtual environment (first time only)
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+
+# Install dependencies (first time only)
+pip install -r requirements.txt
+
+# Set your API key
+$env:ANTHROPIC_API_KEY = "sk-ant-..."
+
+# Start the server
+uvicorn main:app --reload --reload-exclude ".venv" --port 8000
+```
+
+> **PowerShell execution policy:** If `.venv\Scripts\Activate.ps1` is blocked, run
+> `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` once,
+> then retry activation.
+
+---
+
+### Terminal 2 — Frontend (Windows)
+
+Same commands as macOS — Node.js and npm work identically on Windows:
+
+```cmd
+cd frontend
+npm install
+npm run dev
+```
+
+Open **http://localhost:5173** in your browser.
+
+---
+
+### Windows-specific gotchas
+
+| Issue | Fix |
+|---|---|
+| `python3` not recognised | Use `python` instead. Confirm with `python --version`. |
+| `uvicorn` not found after activating venv | Make sure the venv is active — prompt should show `(.venv)`. Re-run `.venv\Scripts\activate`. |
+| Camera not accessible | Allow camera access in **Settings → Privacy & Security → Camera** and make sure the browser has permission. |
+| Port 8000 or 5173 already in use | Find the process with `netstat -ano \| findstr :8000` and end it in Task Manager, or change the port in the uvicorn / Vite commands. |
+| `ANTHROPIC_API_KEY` lost between sessions | `set` and `$env:` only last for the current terminal session. To persist it, add it via **System Properties → Environment Variables**. |
+
+---
+
 ## Modes
 
 | Mode | How to activate | What runs |
