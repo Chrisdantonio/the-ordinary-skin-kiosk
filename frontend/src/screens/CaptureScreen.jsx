@@ -102,7 +102,7 @@ export default function CaptureScreen({ onComplete }) {
             <div className="absolute inset-x-0 top-0 h-full pointer-events-none">
               <div className="h-px w-full bg-brand-offwhite/40 animate-scan-line" />
             </div>
-            <p className="font-[Geologica] text-xs tracking-[0.02em] uppercase text-brand-muted animate-pulse-muted relative z-10">
+            <p className="font-[Raleway] text-xs tracking-[0.02em] uppercase text-brand-muted animate-pulse-muted relative z-10">
               Analysing
             </p>
           </div>
@@ -113,7 +113,7 @@ export default function CaptureScreen({ onComplete }) {
       <div className="mt-10 flex flex-col items-center gap-3">
         {phase === PHASES.READY && (
           <>
-            <p className="font-[Geologica] text-sm text-brand-muted tracking-[0.02em]">
+            <p className="font-[Raleway] text-sm text-brand-muted tracking-[0.02em]">
               Centre your face in the guide, then tap to capture.
             </p>
             <button
@@ -128,10 +128,10 @@ export default function CaptureScreen({ onComplete }) {
 
         {phase === PHASES.ERROR && (
           <>
-            <p className="font-[Geologica] text-sm text-brand-muted">{error}</p>
+            <p className="font-[Raleway] text-sm text-brand-muted">{error}</p>
             <button
               onClick={() => { setError(null); setPhase(PHASES.READY) }}
-              className="font-[Geologica] mt-2 px-8 py-3 border border-zinc-700 text-sm tracking-[0.02em] uppercase hover:border-zinc-400 transition-colors duration-300 ease-[cubic-bezier(.645,.045,.355,1)]"
+              className="font-[Raleway] mt-2 px-8 py-3 border border-zinc-700 text-sm tracking-[0.02em] uppercase hover:border-zinc-400 transition-colors duration-300 ease-[cubic-bezier(.645,.045,.355,1)]"
             >
               Try Again
             </button>

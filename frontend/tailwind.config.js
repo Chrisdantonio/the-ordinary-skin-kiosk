@@ -5,19 +5,20 @@ export default {
     extend: {
       colors: {
         brand: {
-          // Verified against theordinary.com production CSS (2025-04)
-          black:      '#171616', // primary kiosk background
+          // Source: The Ordinary official style guide (primary/secondary palette)
+          black:      '#0c0906', // near-black — official secondary dark
+          offwhite:   '#e9e6e3', // warm grey — official primary background
+          white:      '#ffffff', // official secondary white
           'warm-dark':'#212020', // elevated surface / card panels
-          offwhite:   '#f3f2f0', // primary text, primary button fill
           'warm-white':'#e1ded9',// warm dividers, inactive states
-          muted:      '#8e8e8e', // labels, captions, secondary text
+          muted:      '#8a8a8a', // labels, captions, secondary text
           mid:        '#cfcbc7', // metadata, pricing
-          accent:     '#e1ded9', // application notes, subtle highlights
+          accent:     '#c8b89a', // application notes, subtle highlights
         },
       },
       fontFamily: {
-        // Geologica is The Ordinary's actual brand typeface (variable font)
-        sans:    ['Geologica', 'system-ui', 'sans-serif'],
+        // Raleway is the official brand typeface (all type — official style guide)
+        sans:    ['Raleway', 'system-ui', 'sans-serif'],
         display: ['Raleway', 'system-ui', 'sans-serif'],
         mono:    ['ui-monospace', 'SFMono-Regular', 'monospace'],
       },

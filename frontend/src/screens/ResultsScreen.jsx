@@ -44,10 +44,10 @@ function ConcernBadge({ concern, index }) {
       style={{ animationDelay: `${index * 70}ms` }}
     >
       <div className="flex items-center justify-between">
-        <span className="font-[Geologica] text-sm font-medium">
+        <span className="font-[Raleway] text-sm font-medium">
           {CONCERN_LABEL[concern.type] ?? concern.type}
         </span>
-        <span className="font-[Geologica] text-xs text-brand-muted tracking-[0.02em]">
+        <span className="font-[Raleway] text-xs text-brand-muted tracking-[0.02em]">
           {SEVERITY_LABEL[concern.severity]}
         </span>
       </div>
@@ -66,9 +66,9 @@ function RoutineStep({ step, index }) {
         {step.step}
       </span>
       <div className="flex flex-col gap-1">
-        <p className="font-[Geologica] text-sm font-medium">{step.name}</p>
-        <p className="font-[Geologica] text-xs text-zinc-400 leading-relaxed">{step.rationale}</p>
-        <p className="font-[Geologica] text-xs text-brand-accent mt-0.5">{step.application}</p>
+        <p className="font-[Raleway] text-sm font-medium">{step.name}</p>
+        <p className="font-[Raleway] text-xs text-zinc-400 leading-relaxed">{step.rationale}</p>
+        <p className="font-[Raleway] text-xs text-brand-accent mt-0.5">{step.application}</p>
       </div>
     </div>
   )
@@ -79,12 +79,12 @@ export default function ResultsScreen({ skinVision, regimen, onRestart }) {
     <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header className="flex items-center justify-between px-10 py-6 border-b border-zinc-800 animate-fade-in">
-        <p className="font-[Geologica] text-xs tracking-[0.02em] uppercase text-brand-muted">
+        <p className="font-[Raleway] text-xs tracking-[0.02em] uppercase text-brand-muted">
           The Ordinary
         </p>
         <button
           onClick={onRestart}
-          className="font-[Geologica] text-xs tracking-[0.02em] uppercase text-brand-muted hover:text-brand-offwhite transition-colors duration-300 ease-[cubic-bezier(.645,.045,.355,1)]"
+          className="font-[Raleway] text-xs tracking-[0.02em] uppercase text-brand-muted hover:text-brand-offwhite transition-colors duration-300 ease-[cubic-bezier(.645,.045,.355,1)]"
         >
           New Analysis
         </button>
@@ -94,10 +94,10 @@ export default function ResultsScreen({ skinVision, regimen, onRestart }) {
         {/* Left: Skin Profile */}
         <section className="w-1/3 px-10 py-8 flex flex-col gap-6 shrink-0">
           <div className="animate-fade-up">
-            <p className="font-[Geologica] text-xs tracking-[0.02em] uppercase text-brand-muted mb-1">
+            <p className="font-[Raleway] text-xs tracking-[0.02em] uppercase text-brand-muted mb-1">
               Skin Profile
             </p>
-            <h2 className="font-[Raleway] text-2xl font-light tracking-[-0.012em]">
+            <h2 className="font-[Raleway] text-2xl font-semibold tracking-[-0.012em]">
               Your Observations
             </h2>
           </div>
@@ -108,7 +108,7 @@ export default function ResultsScreen({ skinVision, regimen, onRestart }) {
             ))}
           </div>
 
-          <p className="font-[Geologica] text-xs text-zinc-600 leading-relaxed mt-auto">
+          <p className="font-[Raleway] text-xs text-zinc-600 leading-relaxed mt-auto">
             {skinVision?.disclaimer}
           </p>
         </section>
@@ -117,7 +117,7 @@ export default function ResultsScreen({ skinVision, regimen, onRestart }) {
         <section className="flex-1 px-10 py-8 flex flex-col gap-10 overflow-auto">
           {/* AM */}
           <div>
-            <p className="font-[Geologica] text-xs tracking-[0.02em] uppercase text-brand-muted mb-4 animate-fade-up">
+            <p className="font-[Raleway] text-xs tracking-[0.02em] uppercase text-brand-muted mb-4 animate-fade-up">
               Morning Routine
             </p>
             <div>
@@ -129,7 +129,7 @@ export default function ResultsScreen({ skinVision, regimen, onRestart }) {
 
           {/* PM */}
           <div>
-            <p className="font-[Geologica] text-xs tracking-[0.02em] uppercase text-brand-muted mb-4 animate-fade-up">
+            <p className="font-[Raleway] text-xs tracking-[0.02em] uppercase text-brand-muted mb-4 animate-fade-up">
               Evening Routine
             </p>
             <div>
@@ -142,12 +142,12 @@ export default function ResultsScreen({ skinVision, regimen, onRestart }) {
           {/* Layering notes */}
           {regimen?.layering_notes?.length > 0 && (
             <div className="border border-zinc-800 p-5 animate-fade-up">
-              <p className="font-[Geologica] text-xs tracking-[0.02em] uppercase text-brand-muted mb-3">
+              <p className="font-[Raleway] text-xs tracking-[0.02em] uppercase text-brand-muted mb-3">
                 Layering Notes
               </p>
               <ul className="flex flex-col gap-2">
                 {regimen.layering_notes.map((note, i) => (
-                  <li key={i} className="font-[Geologica] text-xs text-zinc-400 flex gap-2">
+                  <li key={i} className="font-[Raleway] text-xs text-zinc-400 flex gap-2">
                     <span className="text-brand-accent shrink-0">—</span>
                     {note}
                   </li>
@@ -164,15 +164,15 @@ export default function ResultsScreen({ skinVision, regimen, onRestart }) {
               </span>
             </div>
             <div>
-              <p className="font-[Geologica] text-sm font-medium mb-1">Shop Your Routine</p>
-              <p className="font-[Geologica] text-xs text-zinc-400 leading-relaxed">
+              <p className="font-[Raleway] text-sm font-medium mb-1">Shop Your Routine</p>
+              <p className="font-[Raleway] text-xs text-zinc-400 leading-relaxed">
                 Scan with your phone to add these products to your basket at
                 theordinary.com
               </p>
             </div>
           </div>
 
-          <p className="font-[Geologica] text-xs text-zinc-600">{regimen?.disclaimer}</p>
+          <p className="font-[Raleway] text-xs text-zinc-600">{regimen?.disclaimer}</p>
         </section>
       </div>
     </div>

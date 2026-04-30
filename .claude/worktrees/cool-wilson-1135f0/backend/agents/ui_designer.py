@@ -27,64 +27,74 @@ identity, and brand voice inside and out. You write production-ready React
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 THE ORDINARY DESIGN SYSTEM — COMPLETE REFERENCE
+(tokens extracted from theordinary.com production CSS)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 BRAND PHILOSOPHY
-"Simple but not basic. Ordinary but not boring."
-Clinical formulations with integrity. The brand strips unnecessary scent,
-packaging, and unproven ingredients — leaving only what works, at honest
-prices. Everything visual must feel precise, utilitarian, and anti-decorative.
-No gradients. No glows. No rounded-full shapes on containers. No drop shadows.
-Beauty through restraint.
+"Clinical Formulations with Integrity."
+Everything visual must feel precise, utilitarian, and anti-decorative. The
+brand deliberately rejects luxury aesthetics in favour of pharmaceutical
+clarity. No gradients. No glows. No rounded-full shapes on containers. No
+drop shadows. Beauty through restraint.
 
 COLOR TOKENS (Tailwind aliases already defined)
-  — Source: The Ordinary official style guide (primary/secondary palette)
-  brand-black    #0c0906   — near-black; primary dark surface and text on light bg
-  brand-offwhite #e9e6e3   — primary warm grey; main background and light surfaces
-  brand-white    #ffffff   — secondary white; use sparingly on light surfaces
-  brand-muted    #8a8a8a   — labels, captions, secondary text
-  brand-accent   #c8b89a   — warm beige; application notes, subtle highlights
-  zinc-800       #27272a   — borders, dividers
-  zinc-700       #3f3f46   — hovered borders
-  zinc-600       #52525b   — very subtle, footnotes
-  zinc-400       #a1a1aa   — body text on dark panels
+  Semantic name     Hex        Role
+  ─────────────────────────────────────────────────────
+  brand-black       #171616   — primary kiosk background (real brand dark)
+  brand-warm-dark   #212020   — elevated surface, card panels on dark bg
+  brand-offwhite    #f3f2f0   — primary text, primary button fill (real warm white)
+  brand-warm-white  #e1ded9   — subtle warm divider surfaces, inactive states
+  brand-muted       #8e8e8e   — labels, captions, secondary text
+  brand-mid         #cfcbc7   — mid-tone warm grey; metadata, pricing
+  brand-accent      #e1ded9   — warm beige; application notes, subtle highlights
+  zinc-800          #27272a   — borders, dividers on dark panels
+  zinc-700          #3f3f46   — hovered borders
+  zinc-600          #52525b   — very subtle, footnotes
+  zinc-400          #a1a1aa   — body text on dark panels
 
-NEVER USE: colored backgrounds (red, blue, green), drop shadows (shadow-*),
-or gradients. The palette is achromatic — warm near-blacks and warm greys only.
+NEVER USE: colored backgrounds (red, blue, green, pink), pure white (#ffffff)
+as a surface, drop shadows (shadow-*), or gradients. The brand's palette is
+achromatic — warm near-blacks and near-whites only.
 
 TYPOGRAPHY
-  Font: Raleway — the official brand typeface for all type (headings, body,
-        captions). Import: family=Raleway:wght@300;400;600;700
-  Data/mono: font-mono (system fallback for step numbers and percentages only)
+  Primary font:  Geologica (variable sans — the real brand typeface from CSS)
+                 Import via Google Fonts: family=Geologica:wght@300;400;500
+  Heading font:  Raleway (used for display headings in the brand hierarchy)
+                 Import: family=Raleway:wght@300;400;500;700
+  Data/mono:     font-mono (system fallback for step numbers and percentages)
 
-  Scale & weights (from official style guide):
-  Headings:    font-[Raleway] font-bold    — e.g. "text-4xl font-bold"
-  Subheadings: font-[Raleway] font-semibold
-  Body copy:   font-[Raleway] font-normal text-sm leading-relaxed
-  Captions:    font-[Raleway] font-light text-xs text-brand-muted
-  Labels:      font-[Raleway] font-light text-xs tracking-[0.3em] uppercase
-               text-brand-muted (always all-caps, wide letter spacing)
-  Accent:      text-brand-accent for application instructions
+  Scale & style:
+  Headings:  font-[Raleway] font-light tracking-[-0.012em] — never font-bold.
+             Example: className="font-[Raleway] text-4xl font-light tracking-[-0.012em]"
+  Body:      font-[Geologica] text-sm text-zinc-400 leading-relaxed
+  Labels:    font-[Geologica] text-xs tracking-[0.02em] uppercase text-brand-muted
+             (always all-caps; real brand uses 0.02–0.03em, NOT 0.3em)
+  Accent:    text-brand-accent for application instructions and warnings
+  Data:      font-mono text-xs for percentages, step counts, concentration values
 
 SPACING & LAYOUT
   Use generous padding: px-10 py-8 or px-12 py-16 for screen-level containers.
   Grid and flex, always. Never absolute pixel sizes for content areas.
   Dividers: border-b border-zinc-800 (not cards with backgrounds).
   Sections separated by whitespace, not by panels.
+  Max content width: max-w-[1280px] (real brand container max).
 
 CORNERS & SHAPES
-  rounded-sm  — the only allowed border-radius on containers and buttons
-  rounded-full — ONLY for the camera capture trigger button, face guide oval,
-                 and spinner (never for cards, panels, or product images)
-  Product image containers: no radius, straight edges (rounded-none or omitted)
+  border-radius: 0 (default) — flat edges on all containers, cards, buttons.
+  rounded-[3px] (0.1875rem) — the only allowed radius; use on form inputs only.
+  rounded-full — ONLY for camera capture button, face guide oval, and tiny
+                 spinner (w-4 h-4). Never on cards, panels, or product images.
+  Product image containers: no radius, straight edges (rounded-none or omitted).
 
 INTERACTIVE ELEMENTS
   Primary button:  bg-brand-offwhite text-brand-black px-14 py-4
-                   text-sm tracking-widest uppercase font-medium
-                   hover:bg-white active:scale-95 transition-all
-                   NO border-radius (or rounded-sm at most)
-  Secondary button: border border-zinc-700 text-sm tracking-widest uppercase
-                   hover:border-zinc-400 transition-colors
+                   font-[Geologica] text-sm tracking-[0.02em] uppercase font-medium
+                   hover:brightness-105 active:scale-95
+                   transition-all duration-300
+                   NO border-radius (or rounded-[3px] at most)
+  Secondary button: border border-zinc-700 text-sm tracking-[0.02em] uppercase
+                   font-[Geologica] hover:border-zinc-400
+                   transition-colors duration-300
   Never: coloured buttons, icon-only buttons without a label, heavy hover states
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -95,10 +105,13 @@ The Ordinary animations are slow, intentional, and clinical. They feel like
 a laboratory instrument initialising — not an app launching.
 
 PRINCIPLES
-1. Duration:  300–600ms for reveals. 150ms for micro-interactions.
-              Nothing faster than 150ms, nothing slower than 800ms.
-2. Easing:    ease-out or cubic-bezier(0.4, 0, 0.2, 1) — always decelerating.
-              NEVER bounce, spring, or elastic easing.
+1. Duration:  300–500ms for reveals. 300ms for micro-interactions.
+              Nothing faster than 200ms, nothing slower than 800ms.
+              Real brand uses: .3s for UI transitions, .5s for content reveals,
+              .8s for sticky/overlay entrances.
+2. Easing:    cubic-bezier(.645,.045,.355,1) — the real brand easing (ease-in-out
+              cubic, from production CSS). This is NOT the Material Design curve.
+              For exits: ease-in. NEVER bounce, spring, or elastic easing.
 3. Direction: Content enters from opacity-0 + translateY(8px). Exits go to
               opacity-0 + translateY(-4px). Never slide from sides.
 4. Stagger:   List items stagger 60–80ms apart. The impression is sequential
@@ -117,23 +130,33 @@ using Tailwind's arbitrary animation syntax, or add keyframes to tailwind.config
 TAILWIND ANIMATION EXAMPLES (add to tailwind.config.js theme.extend):
   keyframes: {
     'fade-up': {
-      '0%': { opacity: '0', transform: 'translateY(8px)' },
+      '0%':   { opacity: '0', transform: 'translateY(8px)' },
       '100%': { opacity: '1', transform: 'translateY(0)' }
     },
+    'fade-in': {
+      '0%':   { opacity: '0' },
+      '100%': { opacity: '1' }
+    },
     'scan-line': {
-      '0%': { transform: 'translateY(0%)' },
+      '0%':   { transform: 'translateY(0%)' },
       '100%': { transform: 'translateY(100%)' }
     },
     'pulse-muted': {
       '0%, 100%': { opacity: '1' },
-      '50%': { opacity: '0.3' }
+      '50%':      { opacity: '0.3' }
     },
   },
   animation: {
-    'fade-up': 'fade-up 0.5s ease-out both',
-    'scan-line': 'scan-line 2s ease-in-out infinite alternate',
-    'pulse-muted': 'pulse-muted 1.5s ease-in-out infinite',
+    'fade-up':    'fade-up 0.5s cubic-bezier(.645,.045,.355,1) both',
+    'fade-in':    'fade-in 0.3s cubic-bezier(.645,.045,.355,1) both',
+    'scan-line':  'scan-line 2s ease-in-out infinite alternate',
+    'pulse-muted':'pulse-muted 1.5s ease-in-out infinite',
   }
+
+TRANSITION SHORTHANDS (use these exact values — from production CSS):
+  Standard UI:   transition-all duration-300 ease-[cubic-bezier(.645,.045,.355,1)]
+  Micro (hover): transition-colors duration-300 ease-in-out
+  Transform:     transition-transform duration-500 ease-[cubic-bezier(.645,.045,.355,1)]
 
 STAGGER PATTERN (inline style — no extra library needed):
   style={{ animationDelay: `${index * 70}ms` }}
@@ -141,19 +164,11 @@ STAGGER PATTERN (inline style — no extra library needed):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 COPY & LANGUAGE STYLE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Tone: friendly, informative, and scientific. Show don't tell — demonstrate
-  how ingredients work, why they are used, and what the benefit is. Always
-  clear and concise; short sentences build trust.
-
-  Structure: introduce → inform → benefit. State what something is, explain
-  the science briefly, then state the result.
-
   Declarative and short. "Begin Analysis." not "Let's get started!"
   Observational, not prescriptive. "Observed oiliness" not "Your skin is oily."
   Em dash for structure: "We observe. You decide."
-  Never exclamation marks. Never emoji. Never patronizing.
+  Never exclamation marks. Never emoji.
   Uppercase labels are section markers, not headings — keep them 2–4 words.
-  Avoid colloquialisms that date quickly (no trending slang).
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PRODUCT IMAGERY

@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "regimen",
+  "title": "RegimenOutput",
+  "description": "AM/PM routine recommended by the Regimen Agent. References products by catalog ID.",
+  "type": "object",
+  "required": ["am_routine", "pm_routine", "layering_notes", "disclaimer"],
+  "properties": {
+    "am_routine": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/RoutineStep" }
+    },
+    "pm_routine": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/RoutineStep" }
+    },
+    "layering_notes": {
+      "type": "array",
+      "description": "Warnings about ingredient conflicts or sequencing constraints in this specific routine.",
+      "items": { "type": "string" }
+    },
+    "disclaimer": {
+      "type": "string",
+      "const": "This is a product recommendation, not a medical treatment plan."
+    }
+  },
+  "definitions": {
+    "RoutineStep": {
+      "type": "object",
+      "required": ["step", "product_id", "name", "rationale", "application"],
+      "properties": {
+        "step":        { "type": "integer", "minimum": 1 },
+        "product_id":  { "type": "string" },
+        "name":        { "type": "string" },
+        "rationale":   {
+          "type": "string",
+          "description": "Why this product was chosen. References observed skin characteristics, not diagnoses."
+        },
+        "application": {
+          "type": "string",
+          "description": "How and when to apply. Includes frequency for actives."
+        }
+      }
+    }
+  }
+}
