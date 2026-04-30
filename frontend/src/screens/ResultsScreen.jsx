@@ -1,3 +1,18 @@
+const PRODUCT_IMAGE = {
+  'hyaluronic-acid-2-b5':             '/products/hyaluronic.jpg',
+  'niacinamide-10-zinc-1':            '/products/niacinamide.jpg',
+  'retinol-0-5-squalane':             '/products/retinol.jpg',
+  'aha-30-bha-2-peeling-solution':    '/products/aha_bha.jpg',
+  'caffeine-solution-5-egcg':         '/products/caffeine.jpg',
+  'vitamin-c-suspension-23':          '/products/vitamin_c.jpg',
+  'squalane-cleanser':                '/products/squalane_cleanser.jpg',
+  'natural-moisturizing-factors-ha':  '/products/nmf.jpg',
+  'multi-peptide-ha-serum':           '/products/buffet.jpg',
+  'glycolic-acid-7-toning-solution':  '/products/glycolic.jpg',
+  'salicylic-acid-2-anhydrous-solution': '/products/salicylic.jpg',
+  'multi-peptide-copper-peptides-1':  '/products/multi_peptide.jpg',
+}
+
 function ConcernSeverityBar({ severity }) {
   const filled = { mild: 1, moderate: 2, pronounced: 3 }[severity] ?? 0
   return (
@@ -57,11 +72,19 @@ function ConcernBadge({ concern, index }) {
 }
 
 function RoutineStep({ step, index }) {
+  const imgSrc = PRODUCT_IMAGE[step.product_id]
   return (
     <div
       className="flex gap-4 py-4 border-b border-zinc-800 last:border-0 animate-fade-up"
       style={{ animationDelay: `${index * 60}ms` }}
     >
+      {imgSrc && (
+        <img
+          src={imgSrc}
+          alt=""
+          className="w-12 h-12 object-contain shrink-0 self-start"
+        />
+      )}
       <span className="font-mono text-xs text-brand-muted mt-0.5 w-4 shrink-0">
         {step.step}
       </span>
@@ -74,7 +97,7 @@ function RoutineStep({ step, index }) {
   )
 }
 
-export default function ResultsScreen({ skinVision, regimen, onRestart }) {
+export default function ResultsScreen({ skinVision, regimen, onRestart, onNext }) {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
@@ -156,25 +179,19 @@ export default function ResultsScreen({ skinVision, regimen, onRestart }) {
             </div>
           )}
 
-          {/* QR checkout */}
-          <div className="border border-zinc-800 p-6 flex gap-6 items-center mt-auto animate-fade-up">
-            <div className="w-20 h-20 bg-brand-warm-dark flex items-center justify-center shrink-0">
-              <span className="font-mono text-xs text-zinc-600 text-center leading-tight">
-                QR<br />code
-              </span>
-            </div>
-            <div>
-              <p className="font-[Raleway] text-sm font-medium mb-1">Shop Your Routine</p>
-              <p className="font-[Raleway] text-xs text-zinc-400 leading-relaxed">
-                Scan with your phone to add these products to your basket at
-                theordinary.com
-              </p>
-            </div>
-          </div>
-
           <p className="font-[Raleway] text-xs text-zinc-600">{regimen?.disclaimer}</p>
         </section>
       </div>
+
+      {/* Footer */}
+      <footer className="px-10 py-6 border-t border-zinc-800 flex justify-end animate-fade-up">
+        <button
+          onClick={onNext}
+          className="font-[Raleway] bg-brand-offwhite text-brand-black px-14 py-4 text-sm tracking-widest uppercase font-medium hover:bg-white active:scale-95 transition-all duration-300"
+        >
+          Next
+        </button>
+      </footer>
     </div>
   )
 }

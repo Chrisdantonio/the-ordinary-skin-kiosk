@@ -2,6 +2,7 @@ import { useState } from 'react'
 import ConsentScreen from './screens/ConsentScreen'
 import CaptureScreen from './screens/CaptureScreen'
 import ResultsScreen from './screens/ResultsScreen'
+import ShopScreen from './screens/ShopScreen'
 
 export default function App() {
   const [screen, setScreen] = useState('consent')
@@ -37,7 +38,11 @@ export default function App() {
           skinVision={skinVision}
           regimen={regimen}
           onRestart={handleRestart}
+          onNext={() => setScreen('shop')}
         />
+      )}
+      {screen === 'shop' && (
+        <ShopScreen onBack={() => setScreen('results')} />
       )}
     </div>
   )
