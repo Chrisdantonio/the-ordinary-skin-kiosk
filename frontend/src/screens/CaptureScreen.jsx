@@ -8,6 +8,15 @@ const PHASES = {
   ERROR: 'error',
 }
 
+const ZONES = [
+  'Analysing forehead',
+  'Analysing cheekbones',
+  'Analysing T-zone',
+  'Analysing under-eye area',
+  'Analysing jawline',
+  'Analysing skin texture',
+]
+
 export default function CaptureScreen({ onComplete }) {
   const videoRef = useRef(null)
   const canvasRef = useRef(null)
@@ -15,6 +24,7 @@ export default function CaptureScreen({ onComplete }) {
   const [phase, setPhase] = useState(PHASES.READY)
   const [countdown, setCountdown] = useState(null)
   const [error, setError] = useState(null)
+  const [zoneIndex, setZoneIndex] = useState(0)
 
   useEffect(() => {
     let active = true
@@ -33,6 +43,15 @@ export default function CaptureScreen({ onComplete }) {
       streamRef.current?.getTracks().forEach(t => t.stop())
     }
   }, [])
+
+  useEffect(() => {
+    if (phase !== PHASES.ANALYZING) return
+    setZoneIndex(0)
+    const id = setInterval(() => {
+      setZoneIndex(i => (i + 1) % ZONES.length)
+    }, 1500)
+    return () => clearInterval(id)
+  }, [phase])
 
   async function handleCapture() {
     setPhase(PHASES.COUNTDOWN)
@@ -95,16 +114,30 @@ export default function CaptureScreen({ onComplete }) {
           </div>
         )}
 
-        {/* Analysing overlay — scan-line pattern, no spinning ring */}
+        {/* Analysing overlay — scan-line + zone cycling */}
         {phase === PHASES.ANALYZING && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 gap-6 overflow-hidden">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 gap-5 overflow-hidden">
             {/* Horizontal hairline scan */}
             <div className="absolute inset-x-0 top-0 h-full pointer-events-none">
               <div className="h-px w-full bg-brand-offwhite/40 animate-scan-line" />
             </div>
-            <p className="font-[Raleway] text-xs tracking-[0.02em] uppercase text-brand-muted animate-pulse-muted relative z-10">
+
+            <p className="font-[Raleway] text-xs tracking-[0.3em] uppercase text-brand-muted animate-pulse-muted relative z-10">
               Analysing
             </p>
+
+            {/* Zone label + progress bar — key forces remount on each zone change */}
+            <div key={zoneIndex} className="relative z-10 flex flex-col items-center gap-3 animate-fade-up">
+              <p className="font-[Raleway] text-xs tracking-[0.3em] uppercase text-brand-offwhite animate-pulse-muted">
+                {ZONES[zoneIndex]}
+              </p>
+              <div className="w-48 h-px bg-zinc-700 overflow-hidden">
+                <div
+                  className="h-full bg-brand-offwhite/40 transition-all duration-700 ease-out"
+                  style={{ width: `${((zoneIndex + 1) / ZONES.length) * 100}%` }}
+                />
+              </div>
+            </div>
           </div>
         )}
       </div>
