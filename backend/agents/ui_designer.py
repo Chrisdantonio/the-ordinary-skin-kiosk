@@ -347,6 +347,9 @@ def design(request: str) -> dict:
     optional tailwind additions, and a rationale.
 
     Args:
+
+
+    
         request: Free-form description of the design task, e.g.
                  "Add a horizontal scan animation to the analysing overlay
                   and stagger the results cards on the ResultsScreen."

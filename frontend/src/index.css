@@ -5,8 +5,8 @@
 html, body, #root {
   height: 100%;
   margin: 0;
-  background-color: #e9e6e3;
-  color: #0c0906;
+  background-color: #ffffff;
+  color: #000000;
   font-family: 'Raleway', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
