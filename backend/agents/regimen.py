@@ -1,5 +1,6 @@
 import json
 import re
+import sys
 from pathlib import Path
 
 import anthropic
@@ -11,7 +12,13 @@ log = get_logger("regimen")
 
 MODEL = "claude-sonnet-4-6"
 
-CATALOG_PATH = Path(__file__).parent.parent.parent / "products" / "catalog.json"
+# In a PyInstaller onedir binary sys.frozen is True and __file__ no longer
+# points into the source tree — data files live next to sys.executable instead.
+if getattr(sys, 'frozen', False):
+    # PyInstaller 6.x: data files live in _internal/, which sys._MEIPASS points to.
+    CATALOG_PATH = Path(sys._MEIPASS) / 'products' / 'catalog.json'
+else:
+    CATALOG_PATH = Path(__file__).parent.parent.parent / 'products' / 'catalog.json'
 
 SYSTEM = """You are a skincare routine builder for The Ordinary brand kiosk. You create safe,
 effective AM/PM routines using The Ordinary product catalog based on visual skin observations.

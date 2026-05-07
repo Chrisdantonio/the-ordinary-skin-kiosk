@@ -4,27 +4,42 @@ Retail kiosk prototype. Camera scans a face → Skin Vision Agent describes obse
 
 ---
 
-## Quick start (TL;DR)
+## Quick start
 
-You need **two separate terminals open at the same time.**
+### Desktop app (recommended)
 
-**Terminal 1 — Python backend:**
 ```bash
-cd backend
-pip install -r requirements.txt   # first time only
-uvicorn main:app --reload --port 8000
+# From the project root — one command, one window
+npm start
 ```
 
-**Terminal 2 — Node frontend:**
+A branded API key entry window appears. Enter your `ANTHROPIC_API_KEY`, optionally tick **Remember for next launch**, and click **Launch Kiosk**. The app starts the Python backend and serves the frontend automatically, then opens the kiosk window.
+
+> **First run:** you must build the frontend once before `npm start` works.
+> ```bash
+> npm run build:frontend
+> npm start
+> ```
+
+### Two-terminal dev mode (legacy)
+
+If you prefer hot-reload during active UI development:
+
+**Terminal 1 — Backend:**
+```bash
+cd backend
+source .venv/bin/activate
+export ANTHROPIC_API_KEY=sk-ant-...
+uvicorn main:app --reload --reload-exclude '.venv' --port 8000
+```
+
+**Terminal 2 — Frontend:**
 ```bash
 cd frontend
-npm install                        # first time only
 npm run dev
 ```
 
 Then open **http://localhost:5173** in your browser.
-
-> **Important:** `npm install` and `npm run dev` must be run from the `frontend/` folder — **not** `backend/`. The backend is Python, not Node.
 
 ---
 
@@ -33,6 +48,8 @@ Then open **http://localhost:5173** in your browser.
 ```
 backend/
   main.py                 FastAPI app — /analyze and /recommend endpoints
+  server.py               PyInstaller entry point (starts uvicorn programmatically)
+  kiosk_backend.spec      PyInstaller build spec (bundles catalog, SSL certs, hidden imports)
   agents/
     skin_vision.py        Claude Opus 4.7 — multimodal skin analysis
     regimen.py            Claude Sonnet 4.6 — tool-calling routine builder
@@ -47,7 +64,12 @@ frontend/
       CaptureScreen.jsx   Step 2 — webcam capture + 3-second countdown
       ResultsScreen.jsx   Step 3 — skin profile + AM/PM routine display
     api.js                fetch wrappers for /analyze and /recommend
-  vite.config.js          Proxies /api/* → localhost:8000
+  vite.config.js          Proxies /api/* → localhost:8000 (dev only)
+
+electron/
+  main.js                 Electron main process — spawns backend, serves frontend, manages windows
+  preload.js              Secure IPC bridge (contextBridge) between main and renderer
+  api-key.html            Branded API key entry screen shown on launch
 
 shared/schemas/           JSON Schema contracts for both agents' outputs
 products/catalog.json     10 The Ordinary hero products with targeting metadata
@@ -55,7 +77,41 @@ products/catalog.json     10 The Ordinary hero products with targeting metadata
 
 ---
 
-## Prerequisites
+## Building a distributable .app
+
+```bash
+npm run dist
+```
+
+This runs three steps in sequence:
+
+1. **`npm run build:frontend`** — Vite builds `frontend/dist/`
+2. **`npm run build:backend`** — PyInstaller compiles the FastAPI server into a standalone binary at `backend/dist/kiosk-backend/`
+3. **`electron-builder --mac`** — packages everything into `dist-app/mac-arm64/Ordinary Kiosk.app`
+
+The resulting `.app` (~321 MB) is fully self-contained — no Python, Node, or `npm install` required on the target machine.
+
+### Bundle layout
+
+```
+Ordinary Kiosk.app/Contents/Resources/
+  app.asar                    Electron JS (main.js, preload.js, api-key.html)
+  frontend/dist/              Built React app served by the Node static server
+  backend/
+    kiosk-backend             PyInstaller binary (entry point)
+    _internal/                Python 3.14 runtime + all pip dependencies
+      products/catalog.json   Bundled catalog (read via sys._MEIPASS at runtime)
+      certifi/                SSL certificates for outbound httpx requests
+```
+
+> **macOS Gatekeeper:** the build is unsigned (`"identity": null` in `package.json`). macOS may show a "damaged" or "unidentified developer" warning. Right-click → **Open** to bypass, or run once:
+> ```bash
+> xattr -rd com.apple.quarantine "dist-app/mac-arm64/Ordinary Kiosk.app"
+> ```
+
+---
+
+## Prerequisites (dev only)
 
 | Tool | Minimum version | Check |
 |---|---|---|
@@ -64,18 +120,32 @@ products/catalog.json     10 The Ordinary hero products with targeting metadata
 | npm | 9 | `npm --version` |
 | Anthropic API key | — | [console.anthropic.com](https://console.anthropic.com) |
 
+The distributable `.app` bundles its own Python runtime and does not require any of these on the end-user machine.
+
 ---
 
-## Running locally
+## How the desktop shell works
 
-You need **two terminal windows** — one for the backend, one for the frontend.
+The Electron main process (`electron/main.js`) orchestrates three things:
 
-### Terminal 1 — Backend
+1. **API key window** — a minimal branded dialog shown at launch. On submit, the key is passed as `ANTHROPIC_API_KEY` into the backend process environment. Ticking "Remember" writes it to `backend/.env` (dev) or `~/Library/Application Support/Ordinary Kiosk/.env` (packaged), which is read and pre-filled on the next launch.
+
+2. **Backend process** — in dev, spawns `uvicorn` from the `.venv`; in a packaged app, spawns the PyInstaller binary at `Resources/backend/kiosk-backend`. Both expose the FastAPI server on `localhost:8000`.
+
+3. **Frontend server** — a Node.js HTTP server (no extra dependencies) that serves `frontend/dist/` on `localhost:5173` and reverse-proxies `/api/*` requests to the backend, replicating what Vite's dev proxy did at build time.
+
+The kiosk window loads `http://localhost:5173`. Camera permissions are granted automatically via `session.setPermissionRequestHandler`.
+
+---
+
+## Running locally (dev)
+
+### Backend
 
 ```bash
 cd backend
 
-# Create and activate a virtual environment (first time only)
+# Create virtual environment (first time only)
 python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 
@@ -89,14 +159,7 @@ export ANTHROPIC_API_KEY=sk-ant-...
 uvicorn main:app --reload --reload-exclude '.venv' --port 8000
 ```
 
-The backend starts at **http://localhost:8000**.
-Interactive API docs (Swagger UI) at **http://localhost:8000/docs**.
-
-> **Mock mode:** If you omit `ANTHROPIC_API_KEY`, the server runs with hardcoded
-> responses — no API calls are made. Useful for UI work. Confirm which mode is
-> active with `curl http://localhost:8000/health`.
-
-### Terminal 2 — Frontend
+### Frontend (build once for Electron, or run dev server for hot reload)
 
 ```bash
 cd frontend
@@ -104,14 +167,12 @@ cd frontend
 # Install dependencies (first time only)
 npm install
 
-# Start the dev server
+# Build for Electron / npm start
+npm run build
+
+# OR run the hot-reload dev server (two-terminal mode)
 npm run dev
 ```
-
-The frontend starts at **http://localhost:5173**.
-Vite automatically proxies every `/api/*` request to the backend.
-
-Open **http://localhost:5173** in your browser to use the kiosk.
 
 ---
 
@@ -130,8 +191,6 @@ npm --version
 ```
 
 If `python` is not recognised, download the installer from [python.org](https://www.python.org/downloads/) and check **"Add Python to PATH"** during installation.
-
----
 
 ### Terminal 1 — Backend (Windows)
 
@@ -174,14 +233,9 @@ uvicorn main:app --reload --reload-exclude ".venv" --port 8000
 ```
 
 > **PowerShell execution policy:** If `.venv\Scripts\Activate.ps1` is blocked, run
-> `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` once,
-> then retry activation.
-
----
+> `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` once.
 
 ### Terminal 2 — Frontend (Windows)
-
-Same commands as macOS — Node.js and npm work identically on Windows:
 
 ```cmd
 cd frontend
@@ -190,8 +244,6 @@ npm run dev
 ```
 
 Open **http://localhost:5173** in your browser.
-
----
 
 ### Windows-specific gotchas
 
@@ -210,14 +262,13 @@ Open **http://localhost:5173** in your browser.
 | Mode | How to activate | What runs |
 |---|---|---|
 | **Mock** (default) | No `ANTHROPIC_API_KEY` set | Hardcoded skin vision + regimen — zero API cost, instant responses |
-| **Live** | `export ANTHROPIC_API_KEY=sk-ant-...` | Real Skin Vision Agent (Opus 4.7) + Regimen Agent (Sonnet 4.6) + live site fetch |
+| **Live** | `ANTHROPIC_API_KEY` set (via Electron dialog, `.env`, or shell export) | Real Skin Vision Agent (Opus 4.7) + Regimen Agent (Sonnet 4.6) + live site fetch |
 
 ---
 
 ## Monitoring what's happening in the background
 
-When running in **live mode**, the backend prints structured log lines to the
-terminal. Every entry has a timestamp, level, module name, and message.
+When running in **live mode**, the backend prints structured log lines to the terminal (or to Electron's stdout when launched via `npm start`). Every entry has a timestamp, level, module name, and message.
 
 ```
 HH:MM:SS  LEVEL     module        message
@@ -229,105 +280,30 @@ HH:MM:SS  LEVEL     module        message
 
 ```
 10:14:32  INFO   skin_vision  [API call] model=claude-opus-4-7  task=skin_analysis  image_size=187,432 bytes
-```
-→ About to send the webcam frame to Claude Opus. Shows the exact model and image payload size.
-
-```
 10:14:35  INFO   skin_vision  [API response] stop_reason=end_turn  input_tokens=1842  output_tokens=312
-```
-→ Claude responded. `input_tokens` includes the base64 image. `stop_reason=end_turn` means a clean finish.
-
-```
 10:14:35  INFO   skin_vision  [skin_vision] image_usable=True  quality_confidence=0.93  issues=[]
-```
-→ Image quality gate passed. If `image_usable=False` you'll see the specific issues (e.g. `blurry`, `face_not_detected`).
-
-```
 10:14:35  INFO   skin_vision  [skin_vision] top_concerns(3): oiliness:moderate, dark_circles:moderate, dehydration:mild
-```
-→ The concerns that will be handed to the regimen agent. These drive every product choice downstream.
-
-```
 10:14:35  DEBUG  skin_vision  [skin_vision] zone=forehead  concerns=oiliness(moderate,conf=0.82), enlarged_pores(mild,conf=0.75)
 ```
-→ Per-zone detail (DEBUG level). One line per zone that has at least one concern.
-
----
 
 #### `catalog_sync` — live product fetch from The Ordinary website
 
 ```
 10:14:35  INFO   catalog_sync  Fetching popup page: https://theordinary.com/en-us/the-ordinary-immersive-pop-up.html
-```
-→ Outbound request to The Ordinary's immersive pop-up page. Triggered by the regimen agent's `fetch_popup_products` tool call.
-
-```
 10:14:36  INFO   catalog_sync  Popup page extraction complete — 4 product(s) found via json-ld
-```
-→ How many products were extracted and which strategy worked (`json-ld`, `shopify-embedded`, or `title-scrape`).
-
-```
 10:14:36  WARNING  catalog_sync  HTTP error fetching popup page: ...
 ```
-→ Network or HTTP error. The regimen agent will fall back to the local catalog automatically.
-
----
 
 #### `regimen` — what the routine builder is doing
 
 ```
 10:14:35  INFO   regimen  [regimen] Starting regimen build  top_concerns=['oiliness', 'dark_circles', 'dehydration']
-```
-→ Regimen agent started. The concern list comes directly from skin_vision's `top_concerns`.
-
-```
 10:14:35  INFO   regimen  [API call] model=claude-sonnet-4-6  task=regimen_build  iteration=1  messages_in_context=1
-```
-→ First call in the tool-use loop. `iteration` increments each time Claude responds and asks for more tool results.
-
-```
 10:14:36  INFO   regimen  [API response] stop_reason=tool_use  input_tokens=980  output_tokens=88  tool_calls=1
-```
-→ Claude wants to call a tool before finishing. `stop_reason=tool_use` means the loop continues.
-
-```
 10:14:36  INFO   regimen  [tool] fetch_popup_products → 4 product(s) from site
 10:14:36  INFO   regimen  [tool] get_products_by_concern  concerns=['oiliness', 'dark_circles']  time_of_day=any  → 3 match(es)
-```
-→ Tool dispatch results. Shows exactly what the agent asked for and what came back.
-
-```
 10:14:38  INFO   regimen  [API response] stop_reason=end_turn  input_tokens=2340  output_tokens=610  tool_calls=0
-```
-→ Claude finished — no more tool calls, generating the final JSON routine.
-
-```
 10:14:38  INFO   regimen  [regimen] Build complete  am_steps=3  pm_steps=4  layering_notes=2  total_iterations=3
-```
-→ Summary: routine shape and how many API round-trips the tool loop took.
-
----
-
-### Typical full-session log flow
-
-```
-skin_vision  [API call] ...
-skin_vision  [API response] stop_reason=end_turn ...
-skin_vision  [skin_vision] image_usable=True ...
-skin_vision  [skin_vision] top_concerns(3): ...
-
-regimen      [regimen] Starting regimen build ...
-catalog_sync Fetching popup page ...
-regimen      [API call] ... iteration=1
-regimen      [API response] stop_reason=tool_use ... tool_calls=1
-catalog_sync Popup page extraction complete ...
-regimen      [tool] fetch_popup_products → N product(s)
-regimen      [API call] ... iteration=2
-regimen      [API response] stop_reason=tool_use ... tool_calls=1
-regimen      [tool] get_products_by_concern ...
-regimen      [API call] ... iteration=3
-regimen      [API response] stop_reason=end_turn ...
-regimen      [regimen] Build complete ...
 ```
 
 ---
@@ -374,4 +350,5 @@ The regimen agent's system prompt encodes these safety rules:
 - Expand `products/catalog.json` beyond the current 10 hero products
 - QR code generation for checkout handoff (placeholder already in `ResultsScreen`)
 - Skin tone equity testing across diverse subjects
-- Add `ANTHROPIC_API_KEY` to a `.env` file and load it with `python-dotenv`
+- Code-sign the `.app` for distribution without Gatekeeper warnings
+- Add a custom app icon (`build.mac.icon` in `package.json`)

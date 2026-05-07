@@ -1,0 +1,43 @@
+{
+  "name": "ordinary-kiosk-desktop",
+  "version": "0.1.0",
+  "description": "The Ordinary Skin Analysis Kiosk — desktop shell",
+  "main": "electron/main.js",
+  "scripts": {
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && .venv/bin/pyinstaller kiosk_backend.spec --noconfirm",
+    "start": "electron .",
+    "dist": "npm run build:frontend && npm run build:backend && electron-builder --mac"
+  },
+  "build": {
+    "appId": "com.ordinary.kiosk",
+    "productName": "Ordinary Kiosk",
+    "directories": {
+      "output": "dist-app"
+    },
+    "mac": {
+      "target": "dir",
+      "category": "public.app-category.healthcare-fitness",
+      "identity": null
+    },
+    "files": [
+      "electron/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "frontend/dist",
+        "to": "frontend/dist",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "backend/dist/kiosk-backend",
+        "to": "backend",
+        "filter": ["**/*"]
+      }
+    ]
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  }
+}

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Ordinary — Skin Kiosk</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0a0a0a;
+      color: #e8e8e4;
+      font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      -webkit-app-region: drag;
+      user-select: none;
+    }
+
+    .wordmark {
+      letter-spacing: 0.25em;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: #e8e8e4;
+      opacity: 0.9;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      letter-spacing: 0.15em;
+      font-size: 9px;
+      font-weight: 400;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 40px;
+    }
+
+    .divider {
+      width: 32px;
+      height: 1px;
+      background: #333;
+      margin-bottom: 40px;
+    }
+
+    form {
+      width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      -webkit-app-region: no-drag;
+    }
+
+    label {
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #666;
+    }
+
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      background: #111;
+      border: 1px solid #222;
+      color: #e8e8e4;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-family: "SF Mono", "Fira Mono", monospace;
+      outline: none;
+      transition: border-color 0.15s;
+      letter-spacing: 0.05em;
+    }
+
+    input:focus {
+      border-color: #555;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      accent-color: #e8e8e4;
+      width: 13px;
+      height: 13px;
+      cursor: pointer;
+    }
+
+    .checkbox-row span {
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    button {
+      width: 100%;
+      background: #e8e8e4;
+      color: #0a0a0a;
+      border: none;
+      padding: 11px 0;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-top: 4px;
+    }
+
+    button:hover:not(:disabled) {
+      background: #fff;
+    }
+
+    button:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    .status {
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 0.1em;
+      text-align: center;
+      min-height: 16px;
+      margin-top: 20px;
+      -webkit-app-region: no-drag;
+    }
+
+    .status.error {
+      color: #c0392b;
+    }
+  </style>
+</head>
+<body>
+  <p class="wordmark">The Ordinary</p>
+  <p class="subtitle">Skin Analysis Kiosk</p>
+  <div class="divider"></div>
+
+  <form id="form">
+    <label for="key">Anthropic API Key</label>
+    <input
+      type="password"
+      id="key"
+      placeholder="sk-ant-…"
+      autocomplete="off"
+      spellcheck="false"
+    />
+    <div class="checkbox-row">
+      <input type="checkbox" id="save" />
+      <span>Remember for next launch</span>
+    </div>
+    <button type="submit" id="btn">Launch Kiosk</button>
+  </form>
+
+  <p class="status" id="status"></p>
+
+  <script>
+    const form = document.getElementById('form')
+    const keyInput = document.getElementById('key')
+    const saveCheck = document.getElementById('save')
+    const btn = document.getElementById('btn')
+    const statusEl = document.getElementById('status')
+
+    // Pre-fill saved key if one exists
+    window.kiosk.getSavedKey().then((saved) => {
+      if (saved) {
+        keyInput.value = saved
+        saveCheck.checked = true
+      }
+      keyInput.focus()
+    })
+
+    // Stream status messages from main process
+    window.kiosk.onStatus((msg) => {
+      statusEl.textContent = msg
+      if (msg.startsWith('Failed')) {
+        statusEl.classList.add('error')
+        btn.disabled = false
+      }
+    })
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault()
+      const key = keyInput.value.trim()
+      if (!key) {
+        statusEl.textContent = 'Please enter your API key.'
+        statusEl.classList.add('error')
+        return
+      }
+      statusEl.classList.remove('error')
+      statusEl.textContent = 'Initializing…'
+      btn.disabled = true
+      window.kiosk.launch(key, saveCheck.checked)
+    })
+  </script>
+</body>
+</html>

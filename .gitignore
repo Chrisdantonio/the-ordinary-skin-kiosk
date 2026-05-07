@@ -10,6 +10,15 @@
 node_modules/
 frontend/dist/
 
+# Electron
+package-lock.json
+dist-app/
+
+# PyInstaller
+backend/dist/
+backend/build/
+backend/*.spec.bak
+
 # Python
 __pycache__/
 *.pyc
