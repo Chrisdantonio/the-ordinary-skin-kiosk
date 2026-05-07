@@ -16,7 +16,9 @@
       "Bash(grep -v \"^$\")",
       "Bash(printenv ANTHROPIC_API_KEY)",
       "Bash(npm run *)",
-      "Bash(git *)"
+      "Bash(git *)",
+      "Bash(rm -rf node_modules package-lock.json)",
+      "Bash(npm install *)"
     ]
   }
 }
