@@ -111,9 +111,10 @@ function startFrontendServer(distPath) {
 function spawnBackend(apiKey) {
   // Packaged: run the PyInstaller binary (no args needed — port is hardcoded in server.py)
   // Dev: use uvicorn from the venv directly
+  const IS_WIN = process.platform === 'win32'
   const bin = IS_PACKAGED
-    ? path.join(RES, 'backend', 'kiosk-backend')
-    : path.join(RES, 'backend', '.venv', 'bin', 'uvicorn')
+    ? path.join(RES, 'backend', IS_WIN ? 'kiosk-backend.exe' : 'kiosk-backend')
+    : path.join(RES, 'backend', '.venv', IS_WIN ? 'Scripts/uvicorn.exe' : 'bin/uvicorn')
 
   const args = IS_PACKAGED
     ? []

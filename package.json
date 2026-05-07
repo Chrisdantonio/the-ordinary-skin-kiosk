@@ -7,7 +7,8 @@
     "build:frontend": "cd frontend && npm run build",
     "build:backend": "cd backend && .venv/bin/pyinstaller kiosk_backend.spec --noconfirm",
     "start": "electron .",
-    "dist": "npm run build:frontend && npm run build:backend && electron-builder --mac"
+    "dist": "npm run build:frontend && npm run build:backend && electron-builder --mac",
+    "dist:win": "npm run build:frontend && npm run build:backend && electron-builder --win"
   },
   "build": {
     "appId": "com.ordinary.kiosk",
@@ -19,6 +20,18 @@
       "target": "dir",
       "category": "public.app-category.healthcare-fitness",
       "identity": null
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
     },
     "files": [
       "electron/**/*"
