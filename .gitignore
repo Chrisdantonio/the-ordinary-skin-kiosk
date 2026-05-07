@@ -3,7 +3,7 @@
 .AppleDouble
 .LSOverride
 
-# Node
+# Dependencies
 node_modules/
 frontend/dist/
 

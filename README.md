@@ -4,6 +4,30 @@ Retail kiosk prototype. Camera scans a face → Skin Vision Agent describes obse
 
 ---
 
+## Quick start (TL;DR)
+
+You need **two separate terminals open at the same time.**
+
+**Terminal 1 — Python backend:**
+```bash
+cd backend
+pip install -r requirements.txt   # first time only
+uvicorn main:app --reload --port 8000
+```
+
+**Terminal 2 — Node frontend:**
+```bash
+cd frontend
+npm install                        # first time only
+npm run dev
+```
+
+Then open **http://localhost:5173** in your browser.
+
+> **Important:** `npm install` and `npm run dev` must be run from the `frontend/` folder — **not** `backend/`. The backend is Python, not Node.
+
+---
+
 ## Project structure
 
 ```
