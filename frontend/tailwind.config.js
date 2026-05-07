@@ -5,15 +5,14 @@ export default {
     extend: {
       colors: {
         brand: {
-          // Source: The Ordinary official style guide (primary/secondary palette)
-          black:      '#0c0906', // near-black — official secondary dark
-          offwhite:   '#e9e6e3', // warm grey — official primary background
-          white:      '#ffffff', // official secondary white
-          'warm-dark':'#212020', // elevated surface / card panels
-          'warm-white':'#e1ded9',// warm dividers, inactive states
-          muted:      '#8a8a8a', // labels, captions, secondary text
-          mid:        '#cfcbc7', // metadata, pricing
-          accent:     '#c8b89a', // application notes, subtle highlights
+          black:      '#000000', // pure black — headlines, primary text
+          offwhite:   '#f7f5f3', // near-white — subtle hover fills
+          white:      '#ffffff', // page background
+          'warm-dark':'#1a1a1a', // near-black — dark surfaces (camera bg)
+          'warm-white':'#e8e4df',// warm light gray — dividers, borders
+          muted:      '#767676', // medium gray — labels, captions
+          mid:        '#b0aba6', // light gray — metadata, pricing
+          accent:     '#9b9590', // warm gray — application notes
         },
       },
       fontFamily: {
