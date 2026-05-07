@@ -111,6 +111,84 @@ Ordinary Kiosk.app/Contents/Resources/
 
 ---
 
+## Building a distributable Windows installer
+
+> **Must be run on a Windows machine.** The Python backend binary must be compiled on the same OS it will run on — cross-compiling from macOS is not supported for the PyInstaller step.
+
+### Prerequisites (Windows build machine)
+
+Same as the dev prerequisites table below, plus:
+
+- **PyInstaller** must be installed inside the venv (`pip install pyinstaller`)
+- **Inno Setup / NSIS** is handled automatically by electron-builder — no manual install needed
+
+### Steps
+
+**Step 1 — Build the frontend** (PowerShell or cmd):
+
+```cmd
+npm run build:frontend
+```
+
+**Step 2 — Build the backend binary** (the `dist:win` script uses a Unix path for PyInstaller, so run this step manually on Windows):
+
+```cmd
+cd backend
+.venv\Scripts\activate
+pyinstaller kiosk_backend.spec --noconfirm
+cd ..
+```
+
+**Step 3 — Package with electron-builder:**
+
+```cmd
+npx electron-builder --win
+```
+
+Or run all three steps at once if you patch `build:backend` to use the Windows path:
+
+```cmd
+npm run dist:win
+```
+
+> **Note:** `npm run dist:win` will fail on an unpatched repo because `build:backend` calls `.venv/bin/pyinstaller` (Unix path). Either run the three steps above manually, or temporarily edit `package.json` → `build:backend` to use `.venv\Scripts\pyinstaller` before running `dist:win`.
+
+### Output
+
+```
+dist-app/
+  win-unpacked/              Unsigned portable build
+  Ordinary Kiosk Setup.exe  NSIS installer — creates Start Menu + Desktop shortcuts
+```
+
+Run `Ordinary Kiosk Setup.exe` to install. The installer lets the user choose the installation directory and creates an uninstaller entry in **Add or Remove Programs**.
+
+### Bundle layout (Windows)
+
+```
+%LOCALAPPDATA%\Programs\Ordinary Kiosk\
+  resources\
+    app.asar                    Electron JS (main.js, preload.js, api-key.html)
+    frontend\dist\              Built React app
+    backend\
+      kiosk-backend.exe         PyInstaller binary
+      _internal\                Python runtime + pip dependencies
+        products\catalog.json
+        certifi\
+```
+
+### Windows SmartScreen warning
+
+The installer is unsigned. Windows Defender SmartScreen will show **"Windows protected your PC"** on first run. Click **More info → Run anyway** to proceed.
+
+To suppress this for internal distribution, sign the installer with a code-signing certificate:
+
+```cmd
+signtool sign /fd SHA256 /t http://timestamp.digicert.com "dist-app\Ordinary Kiosk Setup.exe"
+```
+
+---
+
 ## Prerequisites (dev only)
 
 | Tool | Minimum version | Check |

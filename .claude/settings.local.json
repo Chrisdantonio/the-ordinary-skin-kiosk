@@ -18,7 +18,20 @@
       "Bash(npm run *)",
       "Bash(git *)",
       "Bash(rm -rf node_modules package-lock.json)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(npm --version)",
+      "Bash(/Users/christopherdantonio/Desktop/School-Github/the-ordinary-skin-kiosk/node_modules/.bin/electron --version)",
+      "Bash(.venv/bin/pip install *)",
+      "Bash(.venv/bin/pyinstaller kiosk_backend.spec --noconfirm)",
+      "Bash(ANTHROPIC_API_KEY=test-key timeout 4 ./kiosk-backend)",
+      "Bash(ANTHROPIC_API_KEY=test-key ./kiosk-backend)",
+      "Bash(curl -s http://127.0.0.1:8000/health)",
+      "Bash(kill %1)",
+      "Bash(open *)",
+      "Bash(xattr -rc \"/Users/christopherdantonio/Desktop/School-Github/the-ordinary-skin-kiosk/dist-app\")",
+      "Bash(log show *)",
+      "Bash(\"/Users/christopherdantonio/Desktop/School-Github/the-ordinary-skin-kiosk/dist-app/mac-arm64/Ordinary Kiosk.app/Contents/MacOS/Ordinary Kiosk\")",
+      "Bash(echo \"PID: $!\")"
     ]
   }
 }
